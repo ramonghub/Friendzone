@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Parse-Starter-Project-1.8.0.iml" filepath="$PROJECT_DIR$/Parse-Starter-Project-1.8.0.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ParseStarterProject/ParseStarterProject.iml" filepath="$PROJECT_DIR$/ParseStarterProject/ParseStarterProject.iml" />
+      <module fileurl="file://$PROJECT_DIR$/nl.mprog.10794913Friendzone/nl.mprog.10794913Friendzone.iml" filepath="$PROJECT_DIR$/nl.mprog.10794913Friendzone/nl.mprog.10794913Friendzone.iml" />
+    </modules>
+  </component>
+</project>
+
