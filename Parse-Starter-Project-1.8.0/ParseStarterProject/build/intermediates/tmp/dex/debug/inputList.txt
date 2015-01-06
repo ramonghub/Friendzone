@@ -1,0 +1,4 @@
+/Users/RamonProBook/Friendzone/Parse-Starter-Project-1.8.0/ParseStarterProject/build/intermediates/classes/debug
+/Users/RamonProBook/Friendzone/Parse-Starter-Project-1.8.0/ParseStarterProject/build/intermediates/pre-dexed/debug/bolts-android-1.1.4-4185881fead4e8efb03b33a41024b73b247f201e.jar
+/Users/RamonProBook/Friendzone/Parse-Starter-Project-1.8.0/ParseStarterProject/build/intermediates/pre-dexed/debug/ParseCrashReporting-1.8.0-c8119197256c782f9ff0bc0c9a736b700d06aeb5.jar
+/Users/RamonProBook/Friendzone/Parse-Starter-Project-1.8.0/ParseStarterProject/build/intermediates/pre-dexed/debug/Parse-1.8.0-d4dc90c2c3418062f81d0c16ca4b60dd9f588c8c.jar

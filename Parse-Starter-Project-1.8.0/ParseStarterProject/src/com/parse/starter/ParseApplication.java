@@ -18,10 +18,9 @@ public class ParseApplication extends Application {
     ParseCrashReporting.enable(this);
 
     // Add your initialization code here
-    Parse.initialize(this, YOUR_APPLICATION_ID, YOUR_CLIENT_KEY);
+      Parse.initialize(this, "swoGi3XwUvWrQQ2sHe8HBXwT8Eli2WxJrN9kx2Ip", "CE1xzDQAZbKUs64wRBtr8dQOeZwhaymJKOnGaU9c");
 
-
-    ParseUser.enableAutomaticUser();
+      ParseUser.enableAutomaticUser();
     ParseACL defaultACL = new ParseACL();
       
     // If you would like all objects to be private by default, remove this line.
