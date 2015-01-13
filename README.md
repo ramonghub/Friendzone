@@ -1,4 +1,2 @@
-# Friendzone
-Android Application
-
-Information in Wiki
+##Friendzone
+Information in wiki
