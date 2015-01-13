@@ -1,3 +1,3 @@
 **Friendzone**
 
-Information in wiki
+Information in Wiki
