@@ -1,2 +1,2 @@
-##Friendzone
+**Friendzone**
 Information in wiki
