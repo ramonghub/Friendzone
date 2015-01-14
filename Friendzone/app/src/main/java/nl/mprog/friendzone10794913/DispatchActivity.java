@@ -7,7 +7,7 @@ import android.os.Bundle;
 import com.parse.ParseUser;
 
 /**
- * Created by RamonProBook on 07-01-15.
+ * Created by rufflez on 7/8/14.
  */
 public class DispatchActivity extends Activity {
 
