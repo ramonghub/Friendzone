@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -12,9 +13,6 @@ import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 
-/**
- * Created by rufflez on 7/8/14.
- */
 public class LoginActivity extends Activity {
 
     private EditText usernameView;
@@ -24,6 +22,14 @@ public class LoginActivity extends Activity {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        // Sign up button click handler
+        ((Button) findViewById(R.id.signup)).setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Starts an intent for the sign up activity
+                startActivity(new Intent(LoginActivity.this, SignUpActivity.class));
+            }
+        });
 
         // Set up the login form.
         usernameView = (EditText) findViewById(R.id.username);
@@ -58,8 +64,8 @@ public class LoginActivity extends Activity {
 
                 // Set up a progress dialog
                 final ProgressDialog dlg = new ProgressDialog(LoginActivity.this);
-                dlg.setTitle("Please wait.");
-                dlg.setMessage("Logging in.  Please wait.");
+                dlg.setTitle("Logging in.");
+                dlg.setMessage("Please wait.");
                 dlg.show();
                 // Call the Parse login method
                 ParseUser.logInInBackground(usernameView.getText().toString(), passwordView.getText()

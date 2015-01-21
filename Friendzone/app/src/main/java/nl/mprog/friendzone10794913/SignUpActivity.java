@@ -24,9 +24,6 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
-/**
- * Created by rufflez on 7/8/14.
- */
 public class SignUpActivity extends Activity {
 
     private EditText usernameView;
@@ -81,8 +78,8 @@ public class SignUpActivity extends Activity {
 
                 // Set up a progress dialog
                 final ProgressDialog dlg = new ProgressDialog(SignUpActivity.this);
-                dlg.setTitle("Please wait.");
-                dlg.setMessage("Signing up.  Please wait.");
+                dlg.setTitle("Signing up.");
+                dlg.setMessage("Please wait.");
                 dlg.show();
 
                 // Set up a new Parse user

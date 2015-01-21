@@ -1,5 +1,6 @@
 package nl.mprog.friendzone10794913;
 
+import java.security.acl.Group;
 import java.util.List;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -17,11 +18,15 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 
+import com.parse.FindCallback;
+import com.parse.Parse;
+import com.parse.ParseClassName;
 import com.parse.ParseException;
+import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseRelation;
 import com.parse.ParseUser;
-
 
 public class MainActivity extends ActionBarActivity {
 
@@ -56,9 +61,9 @@ public class MainActivity extends ActionBarActivity {
             // Create a progressdialog
             mProgressDialog = new ProgressDialog(MainActivity.this);
             // Set progressdialog title
-            mProgressDialog.setTitle("Parse.com Simple ListView Tutorial");
+            mProgressDialog.setTitle("Logging in.");
             // Set progressdialog message
-            mProgressDialog.setMessage("Loading...");
+            mProgressDialog.setMessage("Please wait.");
             mProgressDialog.setIndeterminate(false);
             // Show progressdialog
             mProgressDialog.show();
@@ -66,12 +71,28 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            // Locate the class table named "Country" in Parse.com
-            ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(
-                    "Country");
-            query.orderByDescending("_created_at");
+//            ParseObject test = new ParseObject("group");
+//            String ObjectId = test.getObjectId();
+//
+//            ParseQuery<ParseObject> query2 = new ParseQuery<ParseObject>("Activity");
+//            query2.whereEqualTo("group_name", ObjectId);
+//
+            ParseObject activity = new ParseObject("Activity");
+            String act_id = activity.getObjectId();
+
+//            ParseRelation query2 = activity.getRelation("groups");
+            ParseQuery<ParseObject> test = ParseQuery.getQuery("group");
+            test.whereEqualTo("objectId", act_id);
+
+//            ParseObject current = ParseUser.getCurrentUser();
+//            ParseRelation relation = current.getRelation("groups");
+//            ParseQuery query = relation.getQuery();
+
+            ParseQuery<ParseObject> gameQuery = ParseQuery.getQuery("group");
+            gameQuery.whereEqualTo("objectId",);
+
             try {
-                ob = query.find();
+                ob = test.find();
             } catch (ParseException e) {
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
@@ -84,27 +105,24 @@ public class MainActivity extends ActionBarActivity {
             // Locate the listview in listview_main.xml
             listview = (ListView) findViewById(R.id.listview);
             // Pass the results into an ArrayAdapter
-            adapter = new ArrayAdapter<String>(MainActivity.this,
-                    R.layout.activity_main_listview_item);
+            adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.activity_main_listview_item);
             // Retrieve object "name" from Parse.com database
-            for (ParseObject country : ob) {
-                adapter.add((String) country.get("name"));
+            for (ParseObject query : ob) {
+                adapter.add((String) query.get("activity_name"));
             }
             // Binds the Adapter to the ListView
             listview.setAdapter(adapter);
             // Close the progressdialog
             mProgressDialog.dismiss();
             // Capture button clicks on ListView items
-            listview.setOnItemClickListener(new OnItemClickListener() {
+            listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view,
                                         int position, long id) {
                     // Send single item click data to SingleItemView Class
-                    Intent i = new Intent(MainActivity.this,
-                            SingleItemView.class);
+                    Intent i = new Intent(MainActivity.this, SelectedActivity.class);
                     // Pass data "name" followed by the position
-                    i.putExtra("name", ob.get(position).getString("name")
-                            .toString());
+                    i.putExtra("group_name", ob.get(position).getString("group_name").toString());
                     // Open SingleItemView.java Activity
                     startActivity(i);
                 }

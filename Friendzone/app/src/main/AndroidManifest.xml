@@ -40,6 +40,10 @@
             android:name=".GroupActivity"
             android:label="@string/title_activity_group" >
         </activity>
+        <activity
+            android:name=".SelectedActivity"
+            android:label="@string/title_activity_selected" >
+        </activity>
     </application>
 
 </manifest>
