@@ -1,3 +1,5 @@
+//LoginActivity.java
+//Let's the user login.
 package nl.mprog.friendzone10794913;
 
 import android.app.Activity;

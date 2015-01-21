@@ -1,3 +1,5 @@
+// SignUpActivity.java
+// Let's the user sign up.
 package nl.mprog.friendzone10794913;
 
 import android.app.Activity;
@@ -26,6 +28,7 @@ import com.parse.SignUpCallback;
 
 public class SignUpActivity extends Activity {
 
+    // Declare variables
     private EditText usernameView;
     private EditText passwordView;
     private EditText passwordAgainView;

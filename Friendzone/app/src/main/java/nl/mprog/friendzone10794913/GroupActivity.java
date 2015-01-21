@@ -1,3 +1,5 @@
+//GroupActivity.java
+//Lets the user choose group and shows activities in that group.
 package nl.mprog.friendzone10794913;
 
 import android.app.ProgressDialog;

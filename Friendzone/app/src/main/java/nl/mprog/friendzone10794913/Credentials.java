@@ -1,3 +1,5 @@
+//Credentials.java
+//Credentials of parse account are filled in.
 package nl.mprog.friendzone10794913;
 
 import android.app.Application;

@@ -1,3 +1,5 @@
+// MainActivity.java
+// Shows all the activities that the user takes part in.
 package nl.mprog.friendzone10794913;
 
 import java.security.acl.Group;
@@ -69,30 +71,22 @@ public class MainActivity extends ActionBarActivity {
             mProgressDialog.show();
         }
 
+        //Selects the correct database items to show
         @Override
         protected Void doInBackground(Void... params) {
-//            ParseObject test = new ParseObject("group");
-//            String ObjectId = test.getObjectId();
-//
-//            ParseQuery<ParseObject> query2 = new ParseQuery<ParseObject>("Activity");
-//            query2.whereEqualTo("group_name", ObjectId);
-//
-            ParseObject activity = new ParseObject("Activity");
-            String act_id = activity.getObjectId();
+            //select relation of current user
+            ParseObject current = ParseUser.getCurrentUser();
+            ParseRelation relation = current.getRelation("group");
+            ParseQuery query = relation.getQuery();
 
-//            ParseRelation query2 = activity.getRelation("groups");
-            ParseQuery<ParseObject> test = ParseQuery.getQuery("group");
-            test.whereEqualTo("objectId", act_id);
+            ParseObject test = new ParseObject("group");
+            String ObjectId = test.getObjectId();
 
-//            ParseObject current = ParseUser.getCurrentUser();
-//            ParseRelation relation = current.getRelation("groups");
-//            ParseQuery query = relation.getQuery();
-
-            ParseQuery<ParseObject> gameQuery = ParseQuery.getQuery("group");
-            gameQuery.whereEqualTo("objectId",);
+            ParseQuery<ParseObject> query2 = new ParseQuery<ParseObject>("activity");
+            query2.whereEqualTo("group_name", ObjectId);
 
             try {
-                ob = test.find();
+                ob = query2.find();
             } catch (ParseException e) {
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
@@ -122,7 +116,7 @@ public class MainActivity extends ActionBarActivity {
                     // Send single item click data to SingleItemView Class
                     Intent i = new Intent(MainActivity.this, SelectedActivity.class);
                     // Pass data "name" followed by the position
-                    i.putExtra("group_name", ob.get(position).getString("group_name").toString());
+                    i.putExtra("activity_name", ob.get(position).getString("activity_name").toString());
                     // Open SingleItemView.java Activity
                     startActivity(i);
                 }
@@ -132,16 +126,12 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             ParseUser.getCurrentUser().logOut();

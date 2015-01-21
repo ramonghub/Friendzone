@@ -1,3 +1,5 @@
+//DispatchActivity.java
+//Sends the user to correct page.
 package nl.mprog.friendzone10794913;
 
 import android.app.Activity;
