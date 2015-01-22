@@ -76,14 +76,23 @@ public class MainActivity extends ActionBarActivity {
         protected Void doInBackground(Void... params) {
             //select relation of current user
             ParseObject current = ParseUser.getCurrentUser();
-            ParseRelation relation = current.getRelation("group");
+            ParseRelation relation = current.getRelation("groups");
             ParseQuery query = relation.getQuery();
 
-            ParseObject test = new ParseObject("group");
-            String ObjectId = test.getObjectId();
+            ParseQuery<ParseObject> query2 = new ParseQuery<ParseObject>("Activity");
+            query2.whereMatchesQuery("groups", query);
 
-            ParseQuery<ParseObject> query2 = new ParseQuery<ParseObject>("activity");
-            query2.whereEqualTo("group_name", ObjectId);
+//            ParseObject test = new ParseObject("group");
+//            String ObjectId = test.getObjectId();
+
+//            ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("_User");
+//            query.whereEqualTo("username", ParseUser.getCurrentUser().getUsername());
+
+//            ParseQuery<ParseObject> query2 = new ParseQuery<ParseObject>("Group");
+//            query2.whereEqualTo("group_name", query2);
+
+//            ParseQuery<ParseObject> query2 = new ParseQuery<ParseObject>("activity");
+//            query2.whereMatchesQuery("groups", query);
 
             try {
                 ob = query2.find();
@@ -101,8 +110,8 @@ public class MainActivity extends ActionBarActivity {
             // Pass the results into an ArrayAdapter
             adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.activity_main_listview_item);
             // Retrieve object "name" from Parse.com database
-            for (ParseObject query : ob) {
-                adapter.add((String) query.get("activity_name"));
+            for (ParseObject query2 : ob) {
+                adapter.add((String) query2.get("activity_name"));
             }
             // Binds the Adapter to the ListView
             listview.setAdapter(adapter);
@@ -116,7 +125,7 @@ public class MainActivity extends ActionBarActivity {
                     // Send single item click data to SingleItemView Class
                     Intent i = new Intent(MainActivity.this, SelectedActivity.class);
                     // Pass data "name" followed by the position
-                    i.putExtra("activity_name", ob.get(position).getString("activity_name").toString());
+                    i.putExtra("group_name", ob.get(position).getString("activity_name").toString());
                     // Open SingleItemView.java Activity
                     startActivity(i);
                 }

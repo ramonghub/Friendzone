@@ -25,6 +25,8 @@ import android.widget.TextView;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseRelation;
+import com.parse.ParseUser;
 
 import java.util.List;
 
@@ -37,11 +39,12 @@ public class GroupActivity extends ActionBarActivity implements OnItemSelectedLi
     ArrayAdapter<String> adapter;
     Spinner spinnerOsversions;
     TextView selVersion;
+    String selState;
 
     private String[] state = {
-            "Group 1",
-            "Group 2",
-            "Group 3" };
+            "huisgenoten",
+            "vrienden",
+            "klas" };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,8 +56,7 @@ public class GroupActivity extends ActionBarActivity implements OnItemSelectedLi
         spinnerOsversions = (Spinner) findViewById(R.id.osversions);
         ArrayAdapter<String> adapter_state = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, state);
-        adapter_state
-                .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                adapter_state.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerOsversions.setAdapter(adapter_state);
         spinnerOsversions.setOnItemSelectedListener(this);
     }
@@ -62,14 +64,14 @@ public class GroupActivity extends ActionBarActivity implements OnItemSelectedLi
     public void onItemSelected(AdapterView<?> parent, View view, int position,
                                long id) {
         spinnerOsversions.setSelection(position);
-        String selState = (String) spinnerOsversions.getSelectedItem();
+        selState = (String) spinnerOsversions.getSelectedItem();
+        System.out.println(selState);
         selVersion.setText("Viewing " + selState);
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> arg0) {
         // TODO Auto-generated method stub
-
     }
 
     // RemoteDataTask AsyncTask
@@ -80,7 +82,7 @@ public class GroupActivity extends ActionBarActivity implements OnItemSelectedLi
             // Create a progressdialog
             mProgressDialog = new ProgressDialog(GroupActivity.this);
             // Set progressdialog title
-            mProgressDialog.setTitle("My Activities");
+            mProgressDialog.setTitle("Groups");
             // Set progressdialog message
             mProgressDialog.setMessage("Loading...");
             mProgressDialog.setIndeterminate(false);
@@ -88,14 +90,31 @@ public class GroupActivity extends ActionBarActivity implements OnItemSelectedLi
             mProgressDialog.show();
         }
 
+        //Selects the correct database items to show
         @Override
         protected Void doInBackground(Void... params) {
-            // Locate the class table named "Country" in Parse.com
-            ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Country");
-            query.orderByDescending("_created_at");
-            query.whereEqualTo("name", "Vrijdag 16 januari");
+            //select relation of current user
+            ParseObject current = ParseUser.getCurrentUser();
+            ParseRelation relation = current.getRelation("groups");
+            ParseQuery query = relation.getQuery();
+
+            ParseQuery<ParseObject> query2 = new ParseQuery<ParseObject>("Activity");
+            query2.whereMatchesQuery("groups", query);
+
+//            ParseObject test = new ParseObject("group");
+//            String ObjectId = test.getObjectId();
+
+//            ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("_User");
+//            query.whereEqualTo("username", ParseUser.getCurrentUser().getUsername());
+
+//            ParseQuery<ParseObject> query2 = new ParseQuery<ParseObject>("Group");
+//            query2.whereEqualTo("group_name", query2);
+
+//            ParseQuery<ParseObject> query2 = new ParseQuery<ParseObject>("activity");
+//            query2.whereMatchesQuery("groups", query);
+
             try {
-                ob = query.find();
+                ob = query2.find();
             } catch (ParseException e) {
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
@@ -110,8 +129,8 @@ public class GroupActivity extends ActionBarActivity implements OnItemSelectedLi
             // Pass the results into an ArrayAdapter
             adapter = new ArrayAdapter<String>(GroupActivity.this, R.layout.activity_main_listview_item);
             // Retrieve object "name" from Parse.com database
-            for (ParseObject country : ob) {
-                adapter.add((String) country.get("name"));
+            for (ParseObject query2 : ob) {
+                adapter.add((String) query2.get("activity_name"));
             }
             // Binds the Adapter to the ListView
             listview.setAdapter(adapter);
@@ -125,13 +144,14 @@ public class GroupActivity extends ActionBarActivity implements OnItemSelectedLi
                     // Send single item click data to SingleItemView Class
                     Intent i = new Intent(GroupActivity.this, SelectedActivity.class);
                     // Pass data "name" followed by the position
-                    i.putExtra("name", ob.get(position).getString("name").toString());
+                    i.putExtra("group_name", ob.get(position).getString("activity_name").toString());
                     // Open SingleItemView.java Activity
                     startActivity(i);
                 }
             });
         }
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
