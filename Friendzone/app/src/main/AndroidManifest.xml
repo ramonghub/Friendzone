@@ -44,6 +44,14 @@
             android:name=".SelectedActivity"
             android:label="@string/title_activity_selected" >
         </activity>
+        <activity
+            android:name=".AddGroupActivity"
+            android:label="@string/title_activity_add_group" >
+        </activity>
+        <activity
+            android:name=".AddActivity"
+            android:label="@string/title_activity_add" >
+        </activity>
     </application>
 
 </manifest>

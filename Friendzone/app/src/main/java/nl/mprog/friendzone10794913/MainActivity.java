@@ -2,9 +2,10 @@
 // Shows all the activities that the user takes part in.
 package nl.mprog.friendzone10794913;
 
-import java.security.acl.Group;
+//TODO: Sorteer oplopend op datum (optioneel)
+//TODO: Laat groep zien (actitivy_main_listview_item) (optioneel)
+
 import java.util.List;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -16,15 +17,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.AdapterView.OnItemClickListener;
-
-import com.parse.FindCallback;
-import com.parse.Parse;
-import com.parse.ParseClassName;
 import com.parse.ParseException;
-import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
@@ -33,10 +27,10 @@ import com.parse.ParseUser;
 public class MainActivity extends ActionBarActivity {
 
     // Declare Variables
-    ListView listview;
-    List<ParseObject> ob;
-    ProgressDialog mProgressDialog;
-    ArrayAdapter<String> adapter;
+    private ListView listview;
+    private List<ParseObject> ob;
+    private ProgressDialog mProgressDialog;
+    private ArrayAdapter<String> adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,12 +41,12 @@ public class MainActivity extends ActionBarActivity {
         new RemoteDataTask().execute();
 
 //        Sign up button click handler
-        ((Button) findViewById(R.id.button_group)).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // Starts an intent for the sign up activity
-                startActivity(new Intent(MainActivity.this, GroupActivity.class));
-            }
-        });
+//        ((Button) findViewById(R.id.button_group)).setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+//                // Starts an intent for the sign up activity
+//                startActivity(new Intent(MainActivity.this, GroupActivity.class));
+//            }
+//        });
     }
 
     // RemoteDataTask AsyncTask
@@ -81,18 +75,7 @@ public class MainActivity extends ActionBarActivity {
 
             ParseQuery<ParseObject> query2 = new ParseQuery<ParseObject>("Activity");
             query2.whereMatchesQuery("groups", query);
-
-//            ParseObject test = new ParseObject("group");
-//            String ObjectId = test.getObjectId();
-
-//            ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("_User");
-//            query.whereEqualTo("username", ParseUser.getCurrentUser().getUsername());
-
-//            ParseQuery<ParseObject> query2 = new ParseQuery<ParseObject>("Group");
-//            query2.whereEqualTo("group_name", query2);
-
-//            ParseQuery<ParseObject> query2 = new ParseQuery<ParseObject>("activity");
-//            query2.whereMatchesQuery("groups", query);
+            query2.orderByAscending("date");
 
             try {
                 ob = query2.find();
@@ -111,7 +94,7 @@ public class MainActivity extends ActionBarActivity {
             adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.activity_main_listview_item);
             // Retrieve object "name" from Parse.com database
             for (ParseObject query2 : ob) {
-                adapter.add((String) query2.get("activity_name"));
+                adapter.add((String) String.valueOf(query2.get("date")));
             }
             // Binds the Adapter to the ListView
             listview.setAdapter(adapter);
@@ -125,7 +108,8 @@ public class MainActivity extends ActionBarActivity {
                     // Send single item click data to SingleItemView Class
                     Intent i = new Intent(MainActivity.this, SelectedActivity.class);
                     // Pass data "name" followed by the position
-                    i.putExtra("group_name", ob.get(position).getString("activity_name").toString());
+                    i.putExtra("date", ob.get(position).getDate("date").toString());
+                    i.putExtra("objectId", ob.get(position).getObjectId().toString());
                     // Open SingleItemView.java Activity
                     startActivity(i);
                 }
@@ -142,11 +126,22 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.logout) {
             ParseUser.getCurrentUser().logOut();
             startActivity(new Intent(MainActivity.this, DispatchActivity.class));
             return true;
         }
+        if (id == R.id.add_activity) {
+            Intent intentAddActivity = new Intent(this, AddActivity.class);
+            startActivity(intentAddActivity);
+            return true;
+        }
+        if (id == R.id.add_group) {
+            Intent intentAddGroup = new Intent(this, AddGroupActivity.class);
+            startActivity(intentAddGroup);
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 }

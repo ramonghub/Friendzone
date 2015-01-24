@@ -22,6 +22,8 @@
     <string name="title_activity_group">Groups</string>
     <string name="title_activity_">Activity</string>
     <string name="group_activities">Activities in this group:</string>
-    <string name="title_activity_selected">This Activity</string>
+    <string name="title_activity_selected">Activity</string>
+    <string name="title_activity_add_group">Add Group</string>
+    <string name="title_activity_add">New Activity</string>
 
 </resources>
