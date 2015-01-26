@@ -7,17 +7,7 @@
     <string name="title_activity_login">Login</string>
     <string name="title_activity_sign_up">Sign up</string>
     <string name="title_activity_sign_up_or_login">Sign up or Login</string>
-    <string name="error_intro">Error</string>
-    <string name="error_join">Error</string>
-    <string name="error_blank_password">Error</string>
-    <string name="error_end">Error</string>
-    <string name="error_blank_username">Error</string>
-    <string name="error_mismatched_passwords">Error</string>
-    <string name="prompt_password">Error</string>
-    <string name="prompt_username">Error</string>
-    <string name="prompt_password_again">Error</string>
-    <string name="action_sign_in_short">Error</string>
-    <string name="sign_up">Error</string>
+    <string name="sign_up">SIGN UP</string>
     <string name="name">Name: </string>
     <string name="title_activity_group">Groups</string>
     <string name="title_activity_">Activity</string>
@@ -25,5 +15,23 @@
     <string name="title_activity_selected">Activity</string>
     <string name="title_activity_add_group">Add Group</string>
     <string name="title_activity_add">New Activity</string>
+
+    <string name="prompt_username">Username</string>
+    <string name="prompt_password">Password</string>
+    <string name="prompt_password_again">Password</string>
+    <string name="action_sign_in_register"><b>Sign in</b> or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="action_forgot_password">Recover lost password</string>
+    <string name="login_progress_signing_in">Signing in </string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="error_intro">"Please "</string>
+    <string name="error_blank_username">enter a username</string>
+    <string name="error_blank_password">enter a password</string>
+    <string name="error_mismatched_passwords">enter the same password twice</string>
+    <string name="error_join">" and "</string>
+    <string name="error_end">!</string>
 
 </resources>

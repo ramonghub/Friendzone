@@ -4,9 +4,11 @@ package nl.mprog.friendzone10794913;
 
 //BELANGRIJKSTE ACTIVITY!!!
 //TODO: zorg dat gebruiker aanwezig afwezig kan zetten
+//TODO: onthoudt aanwezig afwezig
+//TODO: -1 bij selectie andere optie
+//TODO: -1 bij uitzetten aanwezigheid
 //TODO: zorg dat nieuw optie kan worden toegevoegd
 //TODO: link nieuw optie aan activity
-//TODO: on deselect option -1 bij parse
 
 import android.content.Context;
 import android.content.Intent;
@@ -58,7 +60,9 @@ public class SelectedActivity extends ActionBarActivity {
     private Switch mySwitch;
     private String oldObject;
     private String newObject;
-    private Integer voted;
+    private Integer voted = 0;
+    private Object selectedItem ;
+    private Integer switch_off;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +93,9 @@ public class SelectedActivity extends ActionBarActivity {
         txtOptions = (TextView) findViewById(R.id.options);
         txtOptions.setText(options);
 
+        // Get reference to switch1
+        mySwitch = (Switch) findViewById(R.id.switch1);
+
         // Getting object reference to listview of main.xml
         listView = (ListView) findViewById(R.id.listview);
 
@@ -100,9 +107,9 @@ public class SelectedActivity extends ActionBarActivity {
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-//            @Override
+            //            @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-                Object selectedItem = listView.getItemAtPosition(position);
+                selectedItem = listView.getItemAtPosition(position);
 
                 ParseQuery<ParseObject> selectedQuery = ParseQuery.getQuery("Option");
                 selectedQuery.whereEqualTo("option_name", selectedItem.toString());
@@ -119,10 +126,10 @@ public class SelectedActivity extends ActionBarActivity {
 
                                 oldObject = newObject;
                                 voted = 1;
+                                switch_off = 0;
 
                                 System.out.println(newObject);
 
-                                mySwitch = (Switch) findViewById(R.id.switch1);
                                 mySwitch.setChecked(true);
                                 switch_status = 1;
                             }
@@ -196,6 +203,11 @@ public class SelectedActivity extends ActionBarActivity {
 
             listView.setItemChecked(settings.getInt("resume_selected", 0), true);
 
+            if (settings.getInt("resume_attending", 0) == 1) {
+                mySwitch = (Switch) findViewById(R.id.switch1);
+                mySwitch.setChecked(true);
+            }
+
         }
         super.onResume();
     }
@@ -211,8 +223,12 @@ public class SelectedActivity extends ActionBarActivity {
 //        remember selected option
         editor.putInt("resume_selected", listView.getCheckedItemPosition());
 
+//        remember switch switch_status
+//        editor.putInt("resume_attending", switch_status);
+
 //	      enable onResume
         editor.putInt("on_pause_check", 1);
+
 //	      commit the edits!
         editor.commit();
 
@@ -228,30 +244,54 @@ public class SelectedActivity extends ActionBarActivity {
             // Enable vibrate
             switch_status = 1;
             System.out.println(switch_status);
+
+            if (voted > 0 && switch_off == 1){
+                ParseQuery<ParseObject> switchOnQuery = ParseQuery.getQuery("Option");
+                switchOnQuery.whereEqualTo("option_name", selectedItem.toString());
+                switchOnQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                    public void done(ParseObject object, ParseException e) {
+                        object.increment("votes", 1);
+                        System.out.println(object.get("votes").toString());
+                        switch_off = 0;
+                    }
+                });
+            }
+
         } else {
             switch_status = 0;
             System.out.println(switch_status);
 
-            if (voted == 1){
-                Object selectedItem = listView.getSelectedItem();
-                System.out.println(String.valueOf(selectedItem));
-                    ParseQuery<ParseObject> selectedQuery = ParseQuery.getQuery("Option");
-                    selectedQuery.whereEqualTo("option_name", selectedItem.toString());
-                    selectedQuery.getFirstInBackground(new GetCallback<ParseObject>() {
-                        public void done(ParseObject object, ParseException e) {
-                            if (object == null) {
-                                System.out.println("The getSelected request failed.");
-                            } else {
-                                    System.out.println();
-                                    object.increment("votes", -1);
-                                    object.saveInBackground();
-                            }
-                        }
-                    });
+            if (voted > 0 && switch_off != 1){
+                ParseQuery<ParseObject> switchQuery = ParseQuery.getQuery("Option");
+                switchQuery.whereEqualTo("option_name", selectedItem.toString());
+                switchQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                    public void done(ParseObject object, ParseException e) {
+                        object.increment("votes", -1);
+                        System.out.println(object.get("votes").toString());
+                        switch_off = 1;
+                    }
+                });
             }
 
         }
 
     }
-}
+
+//    public void onAddButtonClicked(View view) {
+//            if (voted > 0 && switch_off != 1){
+//                ParseQuery<ParseObject> switchQuery = ParseQuery.getQuery("Option");
+//                switchQuery.whereEqualTo("option_name", selectedItem.toString());
+//                switchQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+//                    public void done(ParseObject object, ParseException e) {
+//                        object.increment("votes", -1);
+//                        System.out.println(object.get("votes").toString());
+//                        switch_off = 1;
+//                    }
+//                });
+//            }
+//
+//        }
+
+    }
+
 

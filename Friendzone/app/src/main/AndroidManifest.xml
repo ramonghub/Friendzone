@@ -26,19 +26,13 @@
         </activity>
         <activity
             android:name=".LoginActivity"
-            android:label="@string/title_activity_login" >
+            android:label="@string/title_activity_login"
+            android:windowSoftInputMode="stateVisible">
         </activity>
         <activity
             android:name=".SignUpActivity"
-            android:label="@string/title_activity_sign_up" >
-        </activity>
-        <activity
-            android:name=".SignUpOrLoginActivity"
-            android:label="@string/title_activity_sign_up_or_login" >
-        </activity>
-        <activity
-            android:name=".GroupActivity"
-            android:label="@string/title_activity_group" >
+            android:label="@string/title_activity_sign_up"
+            android:windowSoftInputMode="stateVisible">
         </activity>
         <activity
             android:name=".SelectedActivity"
