@@ -3,12 +3,14 @@
 package nl.mprog.friendzone10794913;
 
 //BELANGRIJKSTE ACTIVITY!!!
-//TODO: zorg dat gebruiker voorkeur kan aangeven
-//TODO: best scoring option wordt weergegeven
-//TODO: onthoud user option
+//TODO: zorg dat gebruiker aanwezig afwezig kan zetten
+//TODO: zorg dat nieuw optie kan worden toegevoegd
 //TODO: link nieuw optie aan activity
+//TODO: on deselect option -1 bij parse
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -19,7 +21,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -47,12 +52,22 @@ public class SelectedActivity extends ActionBarActivity {
     private List<ParseObject> objectList;
     private ArrayList<String> list;
     private ArrayAdapter<String> adapter;
+    private ListView listView;
+    private Integer switch_status;
+    private boolean switch_on;
+    private Switch mySwitch;
+    private String oldObject;
+    private String newObject;
+    private Integer voted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_selected);
         new RemoteDataTask().execute();
+
+        final Context mContext = getApplicationContext();
+        SharedPreferences settings = mContext.getSharedPreferences("sharedPref", Context.MODE_PRIVATE);
 
         // Set textview
         dateTitle = "Date:";
@@ -69,20 +84,54 @@ public class SelectedActivity extends ActionBarActivity {
         txtBestTitle = (TextView) findViewById(R.id.bestTitle);
         txtBestTitle.setText(bestTitle);
 
-
         // Set textview
         options = "Options:";
         txtOptions = (TextView) findViewById(R.id.options);
         txtOptions.setText(options);
 
         // Getting object reference to listview of main.xml
-        ListView listView = (ListView) findViewById(R.id.listview);
+        listView = (ListView) findViewById(R.id.listview);
 
         // Instantiating array adapter to populate the listView
         // The layout android.R.layout.simple_list_item_single_choice creates radio button for each listview item
         list = new ArrayList<String>();
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, list);
         listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+//            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+                Object selectedItem = listView.getItemAtPosition(position);
+
+                ParseQuery<ParseObject> selectedQuery = ParseQuery.getQuery("Option");
+                selectedQuery.whereEqualTo("option_name", selectedItem.toString());
+                selectedQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                    public void done(ParseObject object, ParseException e) {
+                        if (object == null) {
+                            System.out.println("The getSelected request failed.");
+                        } else {
+                            newObject = String.valueOf(object.get("option_name"));
+                            if (!newObject.equals(oldObject)) {
+                                object.increment("votes", 1);
+                                object.saveInBackground();
+                                System.out.println(newObject);
+
+                                oldObject = newObject;
+                                voted = 1;
+
+                                System.out.println(newObject);
+
+                                mySwitch = (Switch) findViewById(R.id.switch1);
+                                mySwitch.setChecked(true);
+                                switch_status = 1;
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
     }
 
     private class RemoteDataTask extends AsyncTask<Void, Void, Void> {
@@ -124,26 +173,85 @@ public class SelectedActivity extends ActionBarActivity {
             }
             return null;
         }
+
         @Override
         protected void onPostExecute(Void result) {
             for (ParseObject query : objectList) {
                 list.add((String) query.get("option_name"));
                 adapter.notifyDataSetChanged();
             }
-//            Capture button clicks on ListView items
-//            listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                @Override
-//                public void onItemClick(AdapterView<?> parent, View view,
-//                                        int position, long id) {
-//                    // Send single item click data to SingleItemView Class
-//                    Intent i = new Intent(MainActivity.this, SelectedActivity.class);
-//                    // Pass data "name" followed by the position
-//                    i.putExtra("date", ob.get(position).getDate("date").toString());
-//                    // Open SingleItemView.java Activity
-//                    startActivity(i);
-//                }
-//            });
         }
+    }
+
+    //	  when game is resumed
+    @Override
+    public void onResume() {
+//		  make shared preferences editor
+        Context mContext = getApplicationContext();
+        SharedPreferences settings = mContext.getSharedPreferences("sharedPref", Context.MODE_PRIVATE);
+        int on_pause_check = settings.getInt("on_pause_check", 0);
+
+//		  if data is saved restore preferences
+        if (on_pause_check == 1) {
+
+            listView.setItemChecked(settings.getInt("resume_selected", 0), true);
+
+        }
+        super.onResume();
+    }
+
+    //	  when game is paused/stopped
+    @Override
+    public void onPause() {
+//		  make shared preferences editor
+        Context mContext = getApplicationContext();
+        SharedPreferences settings = mContext.getSharedPreferences("sharedPref", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+
+//        remember selected option
+        editor.putInt("resume_selected", listView.getCheckedItemPosition());
+
+//	      enable onResume
+        editor.putInt("on_pause_check", 1);
+//	      commit the edits!
+        editor.commit();
+
+        super.onPause();
+    }
+
+
+    public void onSwitchClicked(View view) {
+        // Is the toggle on?
+        switch_on = ((Switch) view).isChecked();
+
+        if (switch_on) {
+            // Enable vibrate
+            switch_status = 1;
+            System.out.println(switch_status);
+        } else {
+            switch_status = 0;
+            System.out.println(switch_status);
+
+            if (voted == 1){
+                Object selectedItem = listView.getSelectedItem();
+                System.out.println(String.valueOf(selectedItem));
+                    ParseQuery<ParseObject> selectedQuery = ParseQuery.getQuery("Option");
+                    selectedQuery.whereEqualTo("option_name", selectedItem.toString());
+                    selectedQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                        public void done(ParseObject object, ParseException e) {
+                            if (object == null) {
+                                System.out.println("The getSelected request failed.");
+                            } else {
+                                    System.out.println();
+                                    object.increment("votes", -1);
+                                    object.saveInBackground();
+                            }
+                        }
+                    });
+            }
+
+        }
+
     }
 }
 

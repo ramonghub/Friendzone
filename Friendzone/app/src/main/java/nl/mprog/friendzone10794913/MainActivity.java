@@ -2,7 +2,6 @@
 // Shows all the activities that the user takes part in.
 package nl.mprog.friendzone10794913;
 
-//TODO: Sorteer oplopend op datum (optioneel)
 //TODO: Laat groep zien (actitivy_main_listview_item) (optioneel)
 
 import java.util.List;

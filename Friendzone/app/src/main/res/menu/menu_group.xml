@@ -1,0 +1,20 @@
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="nl.mprog.friendzone10794913.GroupActivity">
+    <item
+        android:title="add_group"
+        android:id="@+id/add_group"
+        android:icon="@drawable/ic_action_add_group"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        tools:context="nl.mprog.friendzone10794913.GroupActivity"/>
+
+    <item
+        android:title="add_activity"
+        android:id="@+id/add_activity"
+        android:icon="@drawable/ic_action_new_event"
+        android:orderInCategory="100"
+        app:showAsAction="always"/>
+</menu>
