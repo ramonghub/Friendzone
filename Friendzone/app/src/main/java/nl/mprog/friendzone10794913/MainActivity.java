@@ -4,6 +4,7 @@ package nl.mprog.friendzone10794913;
 
 //TODO: Laat groep zien (actitivy_main_listview_item) (optioneel)
 
+import java.util.ArrayList;
 import java.util.List;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -17,11 +18,15 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
+
+import org.json.JSONArray;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -30,6 +35,7 @@ public class MainActivity extends ActionBarActivity {
     private List<ParseObject> ob;
     private ProgressDialog mProgressDialog;
     private ArrayAdapter<String> adapter;
+    private List<ParseObject> testList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,14 +44,6 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main_listview);
         // Execute RemoteDataTask AsyncTask
         new RemoteDataTask().execute();
-
-//        Sign up button click handler
-//        ((Button) findViewById(R.id.button_group)).setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//                // Starts an intent for the sign up activity
-//                startActivity(new Intent(MainActivity.this, GroupActivity.class));
-//            }
-//        });
     }
 
     // RemoteDataTask AsyncTask
@@ -67,6 +65,12 @@ public class MainActivity extends ActionBarActivity {
         //Selects the correct database items to show
         @Override
         protected Void doInBackground(Void... params) {
+            // set up our query for the Book object
+            ParseQuery bookQuery = ParseQuery.getQuery("_User");
+            bookQuery.whereEqualTo("username", ParseUser.getCurrentUser().getUsername().toString());
+
+            bookQuery.include("array");
+
             //select relation of current user
             ParseObject current = ParseUser.getCurrentUser();
             ParseRelation relation = current.getRelation("groups");
@@ -128,19 +132,15 @@ public class MainActivity extends ActionBarActivity {
         if (id == R.id.logout) {
             ParseUser.getCurrentUser().logOut();
             startActivity(new Intent(MainActivity.this, DispatchActivity.class));
-            return true;
         }
         if (id == R.id.add_activity) {
             Intent intentAddActivity = new Intent(this, AddActivity.class);
             startActivity(intentAddActivity);
-            return true;
         }
         if (id == R.id.add_group) {
             Intent intentAddGroup = new Intent(this, AddGroupActivity.class);
             startActivity(intentAddGroup);
-            return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 }

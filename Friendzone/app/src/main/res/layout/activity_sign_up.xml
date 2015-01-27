@@ -9,7 +9,7 @@
         android:id="@+id/imageView"
         android:layout_gravity="center_horizontal"
         android:src="@drawable/ic_action_add_group_light"/>
-    
+
     <EditText
         android:id="@+id/username"
         android:layout_width="match_parent"

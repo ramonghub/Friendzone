@@ -63,7 +63,8 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:hint=" Enter a new option.."
-        android:layout_below="@+id/listview"/>
+        android:layout_below="@+id/listview"
+        android:maxLines="1"/>
 
     <Button
         style="?android:attr/buttonStyleSmall"

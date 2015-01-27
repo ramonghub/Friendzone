@@ -7,6 +7,7 @@ package nl.mprog.friendzone10794913;
 //TODO: onthoudt aanwezig afwezig
 //TODO: -1 bij selectie andere optie
 //TODO: -1 bij uitzetten aanwezigheid
+
 //TODO: zorg dat nieuw optie kan worden toegevoegd
 //TODO: link nieuw optie aan activity
 
@@ -22,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -63,6 +65,7 @@ public class SelectedActivity extends ActionBarActivity {
     private Integer voted = 0;
     private Object selectedItem ;
     private Integer switch_off;
+    private String objectId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +75,8 @@ public class SelectedActivity extends ActionBarActivity {
 
         final Context mContext = getApplicationContext();
         SharedPreferences settings = mContext.getSharedPreferences("sharedPref", Context.MODE_PRIVATE);
+
+        objectId = getIntent().getStringExtra("objectId");
 
         // Set textview
         dateTitle = "Date:";
@@ -277,21 +282,26 @@ public class SelectedActivity extends ActionBarActivity {
 
     }
 
-//    public void onAddButtonClicked(View view) {
-//            if (voted > 0 && switch_off != 1){
-//                ParseQuery<ParseObject> switchQuery = ParseQuery.getQuery("Option");
-//                switchQuery.whereEqualTo("option_name", selectedItem.toString());
-//                switchQuery.getFirstInBackground(new GetCallback<ParseObject>() {
-//                    public void done(ParseObject object, ParseException e) {
-//                        object.increment("votes", -1);
-//                        System.out.println(object.get("votes").toString());
-//                        switch_off = 1;
-//                    }
-//                });
-//            }
-//
-//        }
+    public void onAddButtonClicked(View view) {
+        Intent intent = new Intent(this, SelectedActivity.class);
+        EditText editText = (EditText) findViewById(R.id.edit_message);
+        String new_option = editText.getText().toString();
+        intent.putExtra("date", date);
+        intent.putExtra("objectId", objectId);
 
+            System.out.println(objectId);
+            ParseObject newOption = new ParseObject("Option");
+            newOption.put("activities", ParseObject.createWithoutData("Activity", objectId));
+            newOption.put("option_name", new_option);
+            newOption.put("votes", 0);
+            newOption.saveInBackground();
+
+            ParseObject newActivity = new ParseObject("Activity");
+            newActivity.put("option_name", new_option);
+
+        startActivity(intent);
+        finish();
+        }
     }
 
 

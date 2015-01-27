@@ -14,7 +14,7 @@
     <string name="group_activities">Activities in this group:</string>
     <string name="title_activity_selected">Activity</string>
     <string name="title_activity_add_group">Add Group</string>
-    <string name="title_activity_add">New Activity</string>
+    <string name="title_activity_add">Add Activity</string>
 
     <string name="prompt_username">Username</string>
     <string name="prompt_password">Password</string>
