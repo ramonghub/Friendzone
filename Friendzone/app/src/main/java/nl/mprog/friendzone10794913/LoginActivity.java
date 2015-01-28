@@ -2,8 +2,6 @@
 //Let's the user login.
 package nl.mprog.friendzone10794913;
 
-//TODO: Fix opmaak
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;

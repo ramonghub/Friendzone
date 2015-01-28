@@ -2,14 +2,7 @@
 //Shows selected activity with options
 package nl.mprog.friendzone10794913;
 
-//BELANGRIJKSTE ACTIVITY!!!
-//TODO: zorg dat gebruiker aanwezig afwezig kan zetten
-//TODO: onthoudt aanwezig afwezig
-//TODO: -1 bij selectie andere optie
-//TODO: -1 bij uitzetten aanwezigheid
-
-//TODO: zorg dat nieuw optie kan worden toegevoegd
-//TODO: link nieuw optie aan activity
+//TODO: Alternatief: Knopje +1/-1 attending
 
 import android.content.Context;
 import android.content.Intent;
@@ -49,6 +42,10 @@ public class SelectedActivity extends ActionBarActivity {
     private String dateTitle;
     private TextView txtBestTitle;
     private String bestTitle;
+    private TextView txtNameTitle;
+    private String nameTitle;
+    private TextView txtName;
+    private String name;
     private TextView txtBest;
     private String best;
     private TextView txtOptions;
@@ -77,6 +74,12 @@ public class SelectedActivity extends ActionBarActivity {
         SharedPreferences settings = mContext.getSharedPreferences("sharedPref", Context.MODE_PRIVATE);
 
         objectId = getIntent().getStringExtra("objectId");
+        System.out.println(objectId);
+
+        // Set textview
+        nameTitle = getIntent().getStringExtra("activity_name");
+        txtNameTitle = (TextView) findViewById(R.id.nameTitle);
+        txtNameTitle.setText(nameTitle);
 
         // Set textview
         dateTitle = "Date:";
@@ -149,21 +152,24 @@ public class SelectedActivity extends ActionBarActivity {
     private class RemoteDataTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            //select relation of current user
-            ParseObject current = ParseUser.getCurrentUser();
-            ParseRelation relation = current.getRelation("groups");
-            ParseQuery query = relation.getQuery();
+            //get all groups from user
+            ParseQuery<ParseObject> groupQuery = new ParseQuery<ParseObject>("Group");
+            groupQuery.include("members");
+            groupQuery.whereEqualTo("members", ParseUser.getCurrentUser().getUsername());
 
-            ParseQuery innerQuery = relation.getQuery();
-            ParseQuery<ParseObject> query2 = new ParseQuery<ParseObject>("Activity");
-            query2.whereMatchesQuery("groups", innerQuery);
-            query2.whereEqualTo("objectId", getIntent().getStringExtra("objectId"));
+            //get all activities from groups
+            ParseQuery<ParseObject> queryActivity = new ParseQuery<ParseObject>("Activity");
+            queryActivity.whereMatchesQuery("groups", groupQuery);
+            queryActivity.whereEqualTo("objectId", getIntent().getStringExtra("objectId"));
+
+            //get all options from activity
             ParseQuery<ParseObject> query3 = new ParseQuery<ParseObject>("Option");
-            query3.whereMatchesQuery("activities", query2);
+            query3.whereMatchesQuery("activities", queryActivity);
 
+            //display best option
             ParseQuery<ParseObject> bestQuery = ParseQuery.getQuery("Option");
             bestQuery.orderByDescending("votes");
-            bestQuery.whereMatchesQuery("activities", query2);
+            bestQuery.whereMatchesQuery("activities", queryActivity);
             bestQuery.getFirstInBackground(new GetCallback<ParseObject>() {
                 public void done(ParseObject object, ParseException e) {
                     if (object == null) {
@@ -177,6 +183,7 @@ public class SelectedActivity extends ActionBarActivity {
                 }
             });
 
+            //get all option names for listview
             try {
                 objectList = query3.find();
             } catch (ParseException error) {
@@ -205,9 +212,7 @@ public class SelectedActivity extends ActionBarActivity {
 
 //		  if data is saved restore preferences
         if (on_pause_check == 1) {
-
             listView.setItemChecked(settings.getInt("resume_selected", 0), true);
-
             if (settings.getInt("resume_attending", 0) == 1) {
                 mySwitch = (Switch) findViewById(R.id.switch1);
                 mySwitch.setChecked(true);

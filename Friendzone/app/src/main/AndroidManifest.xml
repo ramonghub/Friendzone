@@ -13,7 +13,8 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".DispatchActivity"
@@ -27,27 +28,36 @@
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
-            android:windowSoftInputMode="stateAlwaysVisible">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysVisible" >
         </activity>
         <activity
             android:name=".SignUpActivity"
             android:label="@string/title_activity_sign_up"
-            android:windowSoftInputMode="stateAlwaysVisible">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysVisible" >
         </activity>
         <activity
             android:name=".SelectedActivity"
             android:label="@string/title_activity_selected"
-            android:windowSoftInputMode="stateHidden">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" >
         </activity>
         <activity
             android:name=".AddGroupActivity"
             android:label="@string/title_activity_add_group"
-            android:windowSoftInputMode="stateHidden">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" >
         </activity>
         <activity
             android:name=".AddActivity"
             android:label="@string/title_activity_add"
-            android:windowSoftInputMode="stateHidden">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" >
+        </activity>
+        <activity
+            android:name=".NewAddGroupActivity"
+            android:label="@string/title_activity_new_add_group" >
         </activity>
     </application>
 

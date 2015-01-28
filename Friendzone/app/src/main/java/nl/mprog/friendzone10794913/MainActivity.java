@@ -2,7 +2,8 @@
 // Shows all the activities that the user takes part in.
 package nl.mprog.friendzone10794913;
 
-//TODO: Laat groep zien (actitivy_main_listview_item) (optioneel)
+//TODO: Laat groep zien (actitivy_main_listview_item)
+//TODO: Laat activity naam zien
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +55,7 @@ public class MainActivity extends ActionBarActivity {
             // Create a progressdialog
             mProgressDialog = new ProgressDialog(MainActivity.this);
             // Set progressdialog title
-            mProgressDialog.setTitle("Logging in.");
+            mProgressDialog.setTitle("Loading");
             // Set progressdialog message
             mProgressDialog.setMessage("Please wait.");
             mProgressDialog.setIndeterminate(false);
@@ -65,20 +66,13 @@ public class MainActivity extends ActionBarActivity {
         //Selects the correct database items to show
         @Override
         protected Void doInBackground(Void... params) {
-            // set up our query for the Book object
-            ParseQuery bookQuery = ParseQuery.getQuery("_User");
-            bookQuery.whereEqualTo("username", ParseUser.getCurrentUser().getUsername().toString());
-
-            bookQuery.include("array");
-
-            //select relation of current user
-            ParseObject current = ParseUser.getCurrentUser();
-            ParseRelation relation = current.getRelation("groups");
-            ParseQuery query = relation.getQuery();
+            ParseQuery<ParseObject> groupQuery = new ParseQuery<ParseObject>("Group");
+            groupQuery.include("members");
+            groupQuery.whereEqualTo("members", ParseUser.getCurrentUser().getUsername());
 
             ParseQuery<ParseObject> query2 = new ParseQuery<ParseObject>("Activity");
-            query2.whereMatchesQuery("groups", query);
-            query2.orderByAscending("date");
+            query2.whereMatchesQuery("groups", groupQuery);
+            query2.orderByDescending("date");
 
             try {
                 ob = query2.find();
@@ -113,6 +107,7 @@ public class MainActivity extends ActionBarActivity {
                     // Pass data "name" followed by the position
                     i.putExtra("date", ob.get(position).getDate("date").toString());
                     i.putExtra("objectId", ob.get(position).getObjectId().toString());
+                    i.putExtra("activity_name", ob.get(position).getString("activity_name").toString());
                     // Open SingleItemView.java Activity
                     startActivity(i);
                 }

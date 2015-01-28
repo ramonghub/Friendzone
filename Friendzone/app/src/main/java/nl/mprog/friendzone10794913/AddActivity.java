@@ -1,8 +1,5 @@
 package nl.mprog.friendzone10794913;
 
-//TODO: Lid kunnen worden van bestaande groep
-//TODO: Maak current user lid van groep
-
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -23,6 +20,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -54,6 +52,7 @@ public class AddActivity extends ActionBarActivity {
     public static String date;
     public static String time;
     private String dateTime;
+    private String ObjectId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +84,18 @@ public class AddActivity extends ActionBarActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
                 selectedItem = listView.getItemAtPosition(position);
+                ParseQuery<ParseObject> selectedQuery = ParseQuery.getQuery("Group");
+                selectedQuery.whereEqualTo("group_name", selectedItem.toString());
+                selectedQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                    public void done(ParseObject object, ParseException e) {
+                        if (object == null) {
+                            System.out.println("The getSelected request failed.");
+                        } else {
+                            ObjectId = String.valueOf(object.getObjectId());
+                            System.out.println(ObjectId);
+                        }
+                    }
+                });
             }
         });
     }
@@ -146,12 +157,12 @@ public class AddActivity extends ActionBarActivity {
         @Override
         protected Void doInBackground(Void... params) {
             //select relation of current user
-            ParseObject current = ParseUser.getCurrentUser();
-            ParseRelation relation = current.getRelation("groups");
-            ParseQuery innerQuery = relation.getQuery();
+            ParseQuery<ParseObject> groupQuery = new ParseQuery<ParseObject>("Group");
+            groupQuery.include("members");
+            groupQuery.whereEqualTo("members", ParseUser.getCurrentUser().getUsername());
 
             try {
-                objectList = innerQuery.find();
+                objectList = groupQuery.find();
             } catch (ParseException error) {
                 Log.e("Error", error.getMessage());
                 error.printStackTrace();
@@ -182,7 +193,7 @@ public class AddActivity extends ActionBarActivity {
         System.out.println(format.format(date));
 
         ParseObject newActivity = new ParseObject("Activity");
-//        newActivity.put("groups", ParseObject.createWithoutData("Group", objectId));
+        newActivity.put("groups", ParseObject.createWithoutData("Group", ObjectId));
         newActivity.put("activity_name", activityName);
         newActivity.put("attending", 0);
         newActivity.put("date", date);

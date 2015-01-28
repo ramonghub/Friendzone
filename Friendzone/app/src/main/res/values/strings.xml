@@ -15,7 +15,6 @@
     <string name="title_activity_selected">Activity</string>
     <string name="title_activity_add_group">Add Group</string>
     <string name="title_activity_add">Add Activity</string>
-
     <string name="prompt_username">Username</string>
     <string name="prompt_password">Password</string>
     <string name="prompt_password_again">Password</string>
@@ -33,5 +32,6 @@
     <string name="error_mismatched_passwords">enter the same password twice</string>
     <string name="error_join">" and "</string>
     <string name="error_end">!</string>
+    <string name="title_activity_new_add_group">Create Group</string>
 
 </resources>

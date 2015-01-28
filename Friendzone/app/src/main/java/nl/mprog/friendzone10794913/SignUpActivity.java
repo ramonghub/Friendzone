@@ -2,8 +2,6 @@
 // Let's the user sign up.
 package nl.mprog.friendzone10794913;
 
-//TODO: Fix uiterlijk
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
