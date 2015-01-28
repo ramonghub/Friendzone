@@ -2,7 +2,9 @@
 //Shows selected activity with options
 package nl.mprog.friendzone10794913;
 
-//TODO: Alternatief: Knopje +1/-1 attending
+//TODO: aanwezigen weergeven
+//TODO: double vote bug: onthouden new en oldobject string?
+//TODO: state van on/off onthouden per activity
 
 import android.content.Context;
 import android.content.Intent;
@@ -30,7 +32,9 @@ import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -51,7 +55,9 @@ public class SelectedActivity extends ActionBarActivity {
     private TextView txtOptions;
     private String options;
     private List<ParseObject> objectList;
+    private List<ParseObject> objectList2;
     private ArrayList<String> list;
+    private ArrayList<String> list2;
     private ArrayAdapter<String> adapter;
     private ListView listView;
     private Integer switch_status;
@@ -60,9 +66,16 @@ public class SelectedActivity extends ActionBarActivity {
     private String oldObject;
     private String newObject;
     private Integer voted = 0;
-    private Object selectedItem ;
     private Integer switch_off;
     private String objectId;
+    private String ObjectId;
+    private Object selectedItem;
+
+    private TextView txtAttendants;
+    private String attendants;
+
+    private TextView txtAttendantsTitle;
+    private String attendantsTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,12 +87,21 @@ public class SelectedActivity extends ActionBarActivity {
         SharedPreferences settings = mContext.getSharedPreferences("sharedPref", Context.MODE_PRIVATE);
 
         objectId = getIntent().getStringExtra("objectId");
-        System.out.println(objectId);
 
         // Set textview
         nameTitle = getIntent().getStringExtra("activity_name");
         txtNameTitle = (TextView) findViewById(R.id.nameTitle);
         txtNameTitle.setText(nameTitle);
+
+        // Set textview
+        attendantsTitle = "Total attendants:";
+        txtAttendantsTitle = (TextView) findViewById(R.id.attendantsTitle);
+        txtAttendantsTitle.setText(attendantsTitle);
+
+        // Set textview
+        attendants = "5";
+        txtAttendants = (TextView) findViewById(R.id.attendants);
+        txtAttendants.setText(attendants);
 
         // Set textview
         dateTitle = "Date:";
@@ -92,7 +114,7 @@ public class SelectedActivity extends ActionBarActivity {
         txtDate.setText(date);
 
         // Set textview
-        bestTitle = "Best:";
+        bestTitle = "Best scoring:";
         txtBestTitle = (TextView) findViewById(R.id.bestTitle);
         txtBestTitle.setText(bestTitle);
 
@@ -110,6 +132,7 @@ public class SelectedActivity extends ActionBarActivity {
         // Instantiating array adapter to populate the listView
         // The layout android.R.layout.simple_list_item_single_choice creates radio button for each listview item
         list = new ArrayList<String>();
+        list2 = new ArrayList<String>();
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, list);
         listView.setAdapter(adapter);
 
@@ -126,26 +149,39 @@ public class SelectedActivity extends ActionBarActivity {
                         if (object == null) {
                             System.out.println("The getSelected request failed.");
                         } else {
-                            newObject = String.valueOf(object.get("option_name"));
+                            newObject = String.valueOf(object.getObjectId());
                             if (!newObject.equals(oldObject)) {
+                                ObjectId = String.valueOf(object.getObjectId());
                                 object.increment("votes", 1);
                                 object.saveInBackground();
-                                System.out.println(newObject);
+
+                                if (voted == 1) {
+                                    ParseQuery<ParseObject> queryMin = ParseQuery.getQuery("Option");
+                                    queryMin.getInBackground(oldObject, new GetCallback<ParseObject>() {
+                                        public void done(ParseObject object2, ParseException e) {
+                                            if (e == null) {
+                                                object2.increment("votes", -1);
+                                                object2.saveInBackground();
+                                            } else {
+                                                // something went wrong
+                                            }
+                                        }
+                                    });
+                                }
 
                                 oldObject = newObject;
                                 voted = 1;
-                                switch_off = 0;
-
-                                System.out.println(newObject);
 
                                 mySwitch.setChecked(true);
-                                switch_status = 1;
                             }
                         }
                     }
                 });
             }
         });
+
+
+
 
     }
 
@@ -175,7 +211,6 @@ public class SelectedActivity extends ActionBarActivity {
                     if (object == null) {
                         System.out.println("The getFirst request failed.");
                     } else {
-                        System.out.println("Retrieved the object.");
                         best = object.get("option_name").toString();
                         txtBest = (TextView) findViewById(R.id.best);
                         txtBest.setText(best);
@@ -183,9 +218,16 @@ public class SelectedActivity extends ActionBarActivity {
                 }
             });
 
+            //test
+            ParseQuery<ParseObject> switchQuery = new ParseQuery<ParseObject>("Activity");
+            switchQuery.whereEqualTo("objectId", objectId);
+            switchQuery.include("attending");
+            switchQuery.whereEqualTo("attending", ParseUser.getCurrentUser().getUsername());
+
             //get all option names for listview
             try {
                 objectList = query3.find();
+                objectList2 = switchQuery.find();
             } catch (ParseException error) {
                 Log.e("Error", error.getMessage());
                 error.printStackTrace();
@@ -198,6 +240,15 @@ public class SelectedActivity extends ActionBarActivity {
             for (ParseObject query : objectList) {
                 list.add((String) query.get("option_name"));
                 adapter.notifyDataSetChanged();
+            }
+            for (ParseObject query2 : objectList2) {
+                list2.add((String)query2.get("attending").toString());
+                System.out.println(list2);
+                if (list2.contains("["+ParseUser.getCurrentUser().getUsername()+"]")) {
+                    mySwitch.setChecked(true);
+                } else {
+                    mySwitch.setChecked(false);
+                }
             }
         }
     }
@@ -233,9 +284,6 @@ public class SelectedActivity extends ActionBarActivity {
 //        remember selected option
         editor.putInt("resume_selected", listView.getCheckedItemPosition());
 
-//        remember switch switch_status
-//        editor.putInt("resume_attending", switch_status);
-
 //	      enable onResume
         editor.putInt("on_pause_check", 1);
 
@@ -251,40 +299,49 @@ public class SelectedActivity extends ActionBarActivity {
         switch_on = ((Switch) view).isChecked();
 
         if (switch_on) {
-            // Enable vibrate
-            switch_status = 1;
-            System.out.println(switch_status);
-
-            if (voted > 0 && switch_off == 1){
-                ParseQuery<ParseObject> switchOnQuery = ParseQuery.getQuery("Option");
-                switchOnQuery.whereEqualTo("option_name", selectedItem.toString());
-                switchOnQuery.getFirstInBackground(new GetCallback<ParseObject>() {
-                    public void done(ParseObject object, ParseException e) {
-                        object.increment("votes", 1);
-                        System.out.println(object.get("votes").toString());
-                        switch_off = 0;
+            if (voted == 1) {
+                ParseQuery<ParseObject> queryMin = ParseQuery.getQuery("Option");
+                queryMin.getInBackground(newObject, new GetCallback<ParseObject>() {
+                    public void done(ParseObject object2, ParseException e) {
+                        if (e == null) {
+                            object2.increment("votes", 1);
+                            object2.saveInBackground();
+                        } else {
+                            // something went wrong
+                        }
                     }
                 });
             }
-
+                ParseQuery<ParseObject> addAttendantQuery = ParseQuery.getQuery("Activity");
+                addAttendantQuery.getInBackground(objectId, new GetCallback<ParseObject>() {
+                    public void done(ParseObject object3, ParseException e) {
+                        if (e == null) {
+                            object3.addAllUnique("attending", Arrays.asList(ParseUser.getCurrentUser().getUsername()));
+                            object3.saveInBackground();
+                        } else {
+                            //something went wrong.
+                        }
+                    }
+                });
         } else {
-            switch_status = 0;
-            System.out.println(switch_status);
-
-            if (voted > 0 && switch_off != 1){
-                ParseQuery<ParseObject> switchQuery = ParseQuery.getQuery("Option");
-                switchQuery.whereEqualTo("option_name", selectedItem.toString());
-                switchQuery.getFirstInBackground(new GetCallback<ParseObject>() {
-                    public void done(ParseObject object, ParseException e) {
-                        object.increment("votes", -1);
-                        System.out.println(object.get("votes").toString());
-                        switch_off = 1;
+            if (voted == 1) {
+                ParseQuery<ParseObject> queryMin = ParseQuery.getQuery("Option");
+                queryMin.getInBackground(newObject, new GetCallback<ParseObject>() {
+                    public void done(ParseObject object2, ParseException e) {
+                        if (e == null) {
+                            object2.increment("votes", -1);
+                            object2.saveInBackground();
+                        } else {
+                            // something went wrong
+                        }
                     }
                 });
+
+
+
+
             }
-
         }
-
     }
 
     public void onAddButtonClicked(View view) {
@@ -293,8 +350,8 @@ public class SelectedActivity extends ActionBarActivity {
         String new_option = editText.getText().toString();
         intent.putExtra("date", date);
         intent.putExtra("objectId", objectId);
+        intent.putExtra("activity_name", nameTitle);
 
-            System.out.println(objectId);
             ParseObject newOption = new ParseObject("Option");
             newOption.put("activities", ParseObject.createWithoutData("Activity", objectId));
             newOption.put("option_name", new_option);

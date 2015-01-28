@@ -12,18 +12,46 @@
         android:id="@+id/nameTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="5dp"
+        android:layout_alignParentLeft="true"
         android:textSize="30sp"
-        android:textStyle="bold|italic"
-        />
+        android:textStyle="bold|italic"/>
+
+    <View android:id="@+id/separator4"
+        android:background="#dadada"
+        android:layout_width = "fill_parent"
+        android:layout_height="1dip"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="7dp"
+        android:layout_below="@+id/nameTitle"/>
+
+    <TextView
+        android:id="@+id/attendantsTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/separator4"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/attendants"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/attendantsTitle"/>
+
+    <View android:id="@+id/separator3"
+        android:background="#dadada"
+        android:layout_width = "fill_parent"
+        android:layout_height="1dip"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="7dp"
+        android:layout_below="@+id/attendants"/>
 
     <TextView
         android:id="@+id/dateTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/nameTitle"
+        android:layout_below="@+id/separator3"
         android:textSize="20sp"
         android:textStyle="bold"/>
 
@@ -31,15 +59,21 @@
         android:id="@+id/date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/dateTitle"
-        android:layout_marginTop="5dp"/>
+        android:layout_below="@+id/dateTitle"/>
+
+    <View android:id="@+id/separator2"
+        android:background="#dadada"
+        android:layout_width = "fill_parent"
+        android:layout_height="1dip"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="7dp"
+        android:layout_below="@+id/date"/>
 
     <TextView
         android:id="@+id/bestTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/date"
-        android:layout_marginTop="25dp"
+        android:layout_below="@+id/separator2"
         android:textSize="20sp"
         android:textStyle="bold"/>
 
@@ -47,15 +81,21 @@
         android:id="@+id/best"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/bestTitle"
-        android:layout_marginTop="5dp"/>
+        android:layout_below="@+id/bestTitle"/>
+
+    <View android:id="@+id/separator1"
+        android:background="#dadada"
+        android:layout_width = "fill_parent"
+        android:layout_height="1dip"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="7dp"
+        android:layout_below="@+id/best"/>
 
     <TextView
         android:id="@+id/options"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/best"
-        android:layout_marginTop="25dp"
+        android:layout_below="@+id/separator1"
         android:textSize="20sp"
         android:textStyle="bold"/>
 
@@ -64,6 +104,8 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:choiceMode="singleChoice"
+        android:layout_marginBottom="55dp"
+        android:layout_marginTop="10dp"
         android:layout_below="@+id/options"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
@@ -74,7 +116,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:hint=" Enter a new option.."
-        android:layout_below="@+id/listview"
+        android:layout_alignParentBottom="true"
         android:maxLines="1"/>
 
     <Button
@@ -84,7 +126,7 @@
         android:layout_height="wrap_content"
         android:text="+"
         android:onClick="onAddButtonClicked"
-        android:layout_alignBottom="@+id/edit_message"
+        android:layout_alignParentBottom="true"
         android:layout_alignRight="@+id/listview"
         android:layout_alignEnd="@+id/listview" />
 
@@ -93,6 +135,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/switch1"
         android:layout_alignParentTop="true"
+        android:layout_marginTop="4dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:onClick="onSwitchClicked"/>
