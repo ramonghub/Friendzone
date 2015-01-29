@@ -38,6 +38,7 @@ import com.parse.ParseUser;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -193,7 +194,7 @@ public class AddActivity extends ActionBarActivity {
 
     //  When add button is clicked
     public void addActivity(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, GroupActivity.class);
         EditText editText = (EditText) findViewById(R.id.edit_message);
         String activityName = editText.getText().toString();
 
@@ -208,7 +209,7 @@ public class AddActivity extends ActionBarActivity {
         ParseObject newActivityQuery = new ParseObject("Activity");
         newActivityQuery.put("groups", ParseObject.createWithoutData("Group", ObjectId));
         newActivityQuery.put("activity_name", activityName);
-        newActivityQuery.put("attending", 0);
+        newActivityQuery.addAllUnique("attending", Arrays.asList(ParseUser.getCurrentUser().getUsername()));
         newActivityQuery.put("date", date);
         newActivityQuery.saveInBackground();
 
