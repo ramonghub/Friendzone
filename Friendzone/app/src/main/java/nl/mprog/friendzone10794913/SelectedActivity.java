@@ -2,8 +2,6 @@
 //Shows selected activity with options
 package nl.mprog.friendzone10794913;
 
-//TODO: count attending
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -29,6 +27,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
+import com.parse.codec.binary.StringUtils;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -55,6 +54,7 @@ public class SelectedActivity extends ActionBarActivity {
     private String options;
     private List<ParseObject> objectList;
     private List<ParseObject> objectList2;
+    private List<ParseObject> objectList3;
     private ArrayList<String> list;
     private ArrayList<String> list2;
     private ArrayAdapter<String> adapter;
@@ -70,12 +70,15 @@ public class SelectedActivity extends ActionBarActivity {
     private String ObjectId;
     private Object selectedItem;
     Integer added = 0;
+    private String attenders;
 
     private TextView txtAttendants;
     private String attendants;
 
     private TextView txtAttendantsTitle;
     private String attendantsTitle;
+
+    private Integer counter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,14 +97,9 @@ public class SelectedActivity extends ActionBarActivity {
         txtNameTitle.setText(nameTitle);
 
         // Set textview
-        attendantsTitle = "Total attendants:";
+        attendantsTitle = "Attendants:";
         txtAttendantsTitle = (TextView) findViewById(R.id.attendantsTitle);
         txtAttendantsTitle.setText(attendantsTitle);
-
-        // Set textview
-        attendants = "5";
-        txtAttendants = (TextView) findViewById(R.id.attendants);
-        txtAttendants.setText(attendants);
 
         // Set textview
         dateTitle = "Date:";
@@ -183,6 +181,7 @@ public class SelectedActivity extends ActionBarActivity {
 
 
 
+
     }
 
     private class RemoteDataTask extends AsyncTask<Void, Void, Void> {
@@ -218,16 +217,22 @@ public class SelectedActivity extends ActionBarActivity {
                 }
             });
 
-            //test
+            //test to see if user is attending
             ParseQuery<ParseObject> switchQuery = new ParseQuery<ParseObject>("Activity");
             switchQuery.whereEqualTo("objectId", objectId);
             switchQuery.include("attending");
             switchQuery.whereEqualTo("attending", ParseUser.getCurrentUser().getUsername());
 
+            //test to see if user is attending
+            ParseQuery<ParseObject> attQuery = new ParseQuery<ParseObject>("Activity");
+            attQuery.whereEqualTo("objectId", objectId);
+//            attQuery.include("attending");
+
             //get all option names for listview
             try {
                 objectList = query3.find();
                 objectList2 = switchQuery.find();
+                objectList3 = attQuery.find();
             } catch (ParseException error) {
                 Log.e("Error", error.getMessage());
                 error.printStackTrace();
@@ -243,14 +248,21 @@ public class SelectedActivity extends ActionBarActivity {
             }
             for (ParseObject query2 : objectList2) {
                 String test = query2.get("attending").toString();
-                System.out.println(test);
 
                 if (test.contains(ParseUser.getCurrentUser().getUsername().toString())) {
                     mySwitch.setChecked(true);
-                    //TODO: fix this.. doel: see if current user is in attending
                 } else {
                     mySwitch.setChecked(false);
                 }
+
+                // Set textview
+
+
+            }
+            for (ParseObject query3 : objectList3) {
+                attendants = query3.get("attending").toString();
+                txtAttendants = (TextView) findViewById(R.id.attendants);
+                txtAttendants.setText(attendants);
             }
         }
     }
