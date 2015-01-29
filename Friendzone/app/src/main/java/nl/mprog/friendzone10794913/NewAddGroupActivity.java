@@ -72,24 +72,6 @@ public class NewAddGroupActivity extends ActionBarActivity {
                 System.out.println(selectedItem);
                 selectedUsers.add((String) selectedItem);
                 System.out.println(selectedUsers);
-
-//                HashSet hs = new HashSet();
-//                hs.addAll(selectedUsers);
-//                selectedUsers.clear();
-//                selectedUsers.addAll(hs);
-
-//                ParseQuery<ParseObject> selectedQuery = ParseQuery.getQuery("_User");
-//                selectedQuery.whereEqualTo("objectId", selectedItem.toString());
-//                selectedQuery.getFirstInBackground(new GetCallback<ParseObject>() {
-//                    public void done(ParseObject object, ParseException e) {
-//                        if (object == null) {
-//                            System.out.println("The getSelected request failed.");
-//                        } else {
-//                            ObjectId = String.valueOf(object.get("username"));
-//                            System.out.println(ObjectId);
-//                        }
-//                    }
-//                });
             }
         });
 
@@ -100,7 +82,6 @@ public class NewAddGroupActivity extends ActionBarActivity {
         protected Void doInBackground(Void... params) {
             //select relation of current user
             ParseQuery<ParseObject> groupQuery = new ParseQuery<ParseObject>("_User");
-//            groupQuery.orderByDescending("createdAt");
             groupQuery.whereNotEqualTo("username", ParseUser.getCurrentUser().getUsername());
 
             try {

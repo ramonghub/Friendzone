@@ -2,9 +2,7 @@
 //Shows selected activity with options
 package nl.mprog.friendzone10794913;
 
-//TODO: aanwezigen weergeven
-//TODO: double vote bug: onthouden new en oldobject string?
-//TODO: state van on/off onthouden per activity
+//TODO: count attending
 
 import android.content.Context;
 import android.content.Intent;
@@ -37,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class SelectedActivity extends ActionBarActivity {
 
@@ -70,6 +69,7 @@ public class SelectedActivity extends ActionBarActivity {
     private String objectId;
     private String ObjectId;
     private Object selectedItem;
+    Integer added = 0;
 
     private TextView txtAttendants;
     private String attendants;
@@ -151,7 +151,7 @@ public class SelectedActivity extends ActionBarActivity {
                         } else {
                             newObject = String.valueOf(object.getObjectId());
                             if (!newObject.equals(oldObject)) {
-                                ObjectId = String.valueOf(object.getObjectId());
+//                                ObjectId = String.valueOf(object.getObjectId());
                                 object.increment("votes", 1);
                                 object.saveInBackground();
 
@@ -242,10 +242,12 @@ public class SelectedActivity extends ActionBarActivity {
                 adapter.notifyDataSetChanged();
             }
             for (ParseObject query2 : objectList2) {
-                list2.add((String)query2.get("attending").toString());
-                System.out.println(list2);
-                if (list2.contains("["+ParseUser.getCurrentUser().getUsername()+"]")) {
+                String test = query2.get("attending").toString();
+                System.out.println(test);
+
+                if (test.contains(ParseUser.getCurrentUser().getUsername().toString())) {
                     mySwitch.setChecked(true);
+                    //TODO: fix this.. doel: see if current user is in attending
                 } else {
                     mySwitch.setChecked(false);
                 }
@@ -269,6 +271,10 @@ public class SelectedActivity extends ActionBarActivity {
                 mySwitch.setChecked(true);
             }
 
+            newObject = settings.getString("newObject", "newObject");
+            oldObject = settings.getString("oldObject", "oldObject");
+            voted = settings.getInt("voted", 0);
+
         }
         super.onResume();
     }
@@ -286,6 +292,10 @@ public class SelectedActivity extends ActionBarActivity {
 
 //	      enable onResume
         editor.putInt("on_pause_check", 1);
+
+        editor.putString("newObject", newObject);
+        editor.putString("oldObject", oldObject);
+        editor.putInt("voted", voted);
 
 //	      commit the edits!
         editor.commit();
@@ -336,11 +346,23 @@ public class SelectedActivity extends ActionBarActivity {
                         }
                     }
                 });
-
-
-
-
             }
+                ParseQuery<ParseObject> addAttendantQuery = ParseQuery.getQuery("Activity");
+                addAttendantQuery.getInBackground(objectId, new GetCallback<ParseObject>() {
+                    public void done(ParseObject object3, ParseException e) {
+                        if (e == null) {
+                            if (added == 0){
+                                list2.add(ParseUser.getCurrentUser().getUsername().toString());
+                                added = 1;
+                            }
+                            System.out.println(list2);
+                            object3.removeAll("attending", list2);
+                            object3.saveInBackground();
+                        } else {
+                            //something went wrong.
+                        }
+                    }
+                });
         }
     }
 

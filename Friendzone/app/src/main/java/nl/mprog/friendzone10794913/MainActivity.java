@@ -38,6 +38,7 @@ public class MainActivity extends ActionBarActivity {
     private ArrayAdapter<String> adapter;
     private List<ParseObject> testList;
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,7 +92,7 @@ public class MainActivity extends ActionBarActivity {
             adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.activity_main_listview_item);
             // Retrieve object "name" from Parse.com database
             for (ParseObject query2 : ob) {
-                adapter.add((String) String.valueOf(query2.get("date")));
+                adapter.add((String) String.valueOf(query2.get("activity_name")));
             }
             // Binds the Adapter to the ListView
             listview.setAdapter(adapter);
@@ -102,13 +103,11 @@ public class MainActivity extends ActionBarActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view,
                                         int position, long id) {
-                    // Send single item click data to SingleItemView Class
                     Intent i = new Intent(MainActivity.this, SelectedActivity.class);
                     // Pass data "name" followed by the position
                     i.putExtra("date", ob.get(position).getDate("date").toString());
                     i.putExtra("objectId", ob.get(position).getObjectId().toString());
-                    i.putExtra("activity_name", ob.get(position).getString("activity_name").toString());
-                    // Open SingleItemView.java Activity
+                    i.putExtra("activity_name", ob.get(position).getString("activity_name"));
                     startActivity(i);
                 }
             });
