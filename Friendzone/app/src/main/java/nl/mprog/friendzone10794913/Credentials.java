@@ -1,6 +1,11 @@
-//Credentials.java
-//Credentials of parse account are filled in.
-//Let's the application connect with parse.com.
+/**
+ * Ramon Geessink
+ * ramongeessink@gmail.com
+ * 10794913
+ *
+ * Credentials of parse account are filled in.
+ * Let's the application connect with parse.com.
+ */
 package nl.mprog.friendzone10794913;
 
 import android.app.Application;

@@ -1,11 +1,16 @@
-// MainActivity.java
-// Shows all the activities that the user takes part in.
+/**
+ * Ramon Geessink
+ * ramongeessink@gmail.com
+ * 10794913
+ *
+ * MainActivity.java shows the activities of the groups that the user is a member of.
+ * The user can select an activity by pressing it.
+ */
+
+//TODO: Change listview
+
 package nl.mprog.friendzone10794913;
 
-//TODO: Laat groep zien (actitivy_main_listview_item)
-//TODO: Laat activity naam zien
-
-import java.util.ArrayList;
 import java.util.List;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -20,63 +25,51 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseRelation;
 import com.parse.ParseUser;
-
-import org.json.JSONArray;
 
 public class MainActivity extends ActionBarActivity {
 
-    // Declare Variables
+    private List<ParseObject> objectList;
     private ListView listview;
-    private List<ParseObject> ob;
     private ProgressDialog mProgressDialog;
     private ArrayAdapter<String> adapter;
-    private List<ParseObject> testList;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Get the view from listview_main.xml
         setContentView(R.layout.activity_main_listview);
-        // Execute RemoteDataTask AsyncTask
-        new RemoteDataTask().execute();
+        new MakeList().execute();
     }
+//    Make list of all activities to show in listview
+    private class MakeList extends AsyncTask<Void, Void, Void> {
 
-    // RemoteDataTask AsyncTask
-    private class RemoteDataTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            // Create a progressdialog
             mProgressDialog = new ProgressDialog(MainActivity.this);
-            // Set progressdialog title
             mProgressDialog.setTitle("Loading");
-            // Set progressdialog message
             mProgressDialog.setMessage("Please wait.");
             mProgressDialog.setIndeterminate(false);
-            // Show progressdialog
             mProgressDialog.show();
         }
 
-        //Selects the correct database items to show
+//        Selects the correct database objects to show
         @Override
         protected Void doInBackground(Void... params) {
+//            Select all groups where user is a member of
             ParseQuery<ParseObject> groupQuery = new ParseQuery<ParseObject>("Group");
             groupQuery.include("members");
             groupQuery.whereEqualTo("members", ParseUser.getCurrentUser().getUsername());
-
-            ParseQuery<ParseObject> query2 = new ParseQuery<ParseObject>("Activity");
-            query2.whereMatchesQuery("groups", groupQuery);
-            query2.orderByDescending("date");
+//            Get all activities from selected groups
+            ParseQuery<ParseObject> activityQuery = new ParseQuery<ParseObject>("Activity");
+            activityQuery.whereMatchesQuery("groups", groupQuery);
+            activityQuery.orderByDescending("date");
 
             try {
-                ob = query2.find();
+                objectList = activityQuery.find();
             } catch (ParseException e) {
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
@@ -86,31 +79,28 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(Void result) {
-            // Locate the listview in listview_main.xml
             listview = (ListView) findViewById(R.id.listview);
-            // Pass the results into an ArrayAdapter
             adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.activity_main_listview_item);
-            // Retrieve object "name" from Parse.com database
-            for (ParseObject query2 : ob) {
+//            Get activity_name to show
+            for (ParseObject query2 : objectList) {
                 adapter.add((String) String.valueOf(query2.get("activity_name")));
             }
-            // Binds the Adapter to the ListView
             listview.setAdapter(adapter);
-            // Close the progressdialog
             mProgressDialog.dismiss();
-            // Capture button clicks on ListView items
-            listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view,
-                                        int position, long id) {
-                    Intent i = new Intent(MainActivity.this, SelectedActivity.class);
-                    // Pass data "name" followed by the position
-                    i.putExtra("date", ob.get(position).getDate("date").toString());
-                    i.putExtra("objectId", ob.get(position).getObjectId().toString());
-                    i.putExtra("activity_name", ob.get(position).getString("activity_name"));
-                    startActivity(i);
-                }
-            });
+
+//                Go to details of activity when clicked on
+                listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view,
+                                            int position, long id) {
+                        Intent i = new Intent(MainActivity.this, SelectedActivity.class);
+                        // Pass data "name" followed by the position
+                        i.putExtra("date", objectList.get(position).getDate("date").toString());
+                        i.putExtra("objectId", objectList.get(position).getObjectId().toString());
+                        i.putExtra("activity_name", objectList.get(position).getString("activity_name"));
+                        startActivity(i);
+                    }
+                });
         }
     }
 

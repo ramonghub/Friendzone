@@ -42,7 +42,7 @@
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:text="Create Group"
-        android:onClick="sendMessage"
+        android:onClick="CreateGroup"
         android:layout_gravity="bottom"
         android:id="@+id/button"
         android:layout_alignParentBottom="true"

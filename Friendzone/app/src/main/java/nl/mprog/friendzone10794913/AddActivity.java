@@ -1,3 +1,12 @@
+/**
+ * Ramon Geessink
+ * ramongeessink@gmail.com
+ * 10794913
+ *
+ * This activity lets the user create a new activity in a selected group.
+ * The user can set time and date and giva a name to the activity.
+ */
+
 package nl.mprog.friendzone10794913;
 
 import android.app.DatePickerDialog;
@@ -24,7 +33,6 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
 import java.text.ParsePosition;
@@ -36,30 +44,31 @@ import java.util.List;
 
 public class AddActivity extends ActionBarActivity {
 
-    private List<ParseObject> objectList;
-    private ArrayList<String> list;
-    private ArrayAdapter<String> adapter;
-    private ListView listView;
     private Object selectedItem ;
-    private TextView txtGroup;
-    private String groupTitle;
-    private TextView txtName;
-    private String nameTitle;
+    private ArrayAdapter<String> adapter;
+    private List<ParseObject> objectList;
+    private ArrayList<String> groupList;
+    private ListView listView;
     private TextView txtDate;
-    private String dateTitle;
     private TextView txtTime;
+    private TextView txtGroup;
+    private TextView txtName;
+    private String dateTitle;
     private String timeTitle;
-    public static String date;
-    public static String time;
-    private String dateTime;
+    private String groupTitle;
+    private String nameTitle;
     private String ObjectId;
+    private String tDate;
+    public static String time;
+    public static String date;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
-        new RemoteDataTask().execute();
+        new MakeGroupList().execute();
 
+//        Set values of the textviews
         groupTitle = "Select group:";
         txtGroup = (TextView) findViewById(R.id.groupTitle);
         txtGroup.setText(groupTitle);
@@ -76,26 +85,28 @@ public class AddActivity extends ActionBarActivity {
         txtDate = (TextView) findViewById(R.id.dateTitle);
         txtDate.setText(dateTitle);
 
+//        Set ArrayList list as the listview that is shown
         listView = (ListView) findViewById(R.id.listview);
-        list = new ArrayList<String>();
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, list);
+        groupList = new ArrayList<String>();
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice,
+                groupList);
         listView.setAdapter(adapter);
 
+//        When the user clicks on item get ObjectId of the Group that activity is for.
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-                selectedItem = listView.getItemAtPosition(position);
-                ParseQuery<ParseObject> selectedQuery = ParseQuery.getQuery("Group");
-                selectedQuery.whereEqualTo("group_name", selectedItem.toString());
-                selectedQuery.getFirstInBackground(new GetCallback<ParseObject>() {
-                    public void done(ParseObject object, ParseException e) {
-                        if (object == null) {
-                            System.out.println("The getSelected request failed.");
-                        } else {
-                            ObjectId = String.valueOf(object.getObjectId());
-                            System.out.println(ObjectId);
-                        }
-                    }
-                });
+            selectedItem = listView.getItemAtPosition(position);
+            ParseQuery<ParseObject> selectedQuery = ParseQuery.getQuery("Group");
+            selectedQuery.whereEqualTo("group_name", selectedItem.toString());
+            selectedQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                public void done(ParseObject object, ParseException e) {
+                if (object == null) {
+                    System.out.println("Failed getting the objectId of selected item.");
+                } else {
+                    ObjectId = String.valueOf(object.getObjectId());
+                }
+                }
+            });
             }
         });
     }
@@ -103,19 +114,18 @@ public class AddActivity extends ActionBarActivity {
     public static class TimePickerFragment extends DialogFragment
             implements TimePickerDialog.OnTimeSetListener {
 
-        @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            // Use the current time as the default values for the picker
+//            Use the current time as the default values for the picker
             final Calendar c = Calendar.getInstance();
             int hour = c.get(Calendar.HOUR_OF_DAY);
             int minute = c.get(Calendar.MINUTE);
 
-            // Create a new instance of TimePickerDialog and return it
+//            Create a new instance of TimePickerDialog and return it
             return new TimePickerDialog(getActivity(), this, hour, minute,
                     DateFormat.is24HourFormat(getActivity()));
         }
 
-        @Override
+//        Add the current time to String time to set as the time of the activity
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             StringBuilder timeBuilder = new StringBuilder().append(hourOfDay).append(":").append(minute);
             time = timeBuilder.toString();
@@ -153,14 +163,15 @@ public class AddActivity extends ActionBarActivity {
         newFragment.show(getFragmentManager(), "datePicker");
     }
 
-    private class RemoteDataTask extends AsyncTask<Void, Void, Void> {
+    private class MakeGroupList extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            //select relation of current user
+//            Select all groups that the current user is a member of.
             ParseQuery<ParseObject> groupQuery = new ParseQuery<ParseObject>("Group");
             groupQuery.include("members");
             groupQuery.whereEqualTo("members", ParseUser.getCurrentUser().getUsername());
 
+//            Find all objects that match query
             try {
                 objectList = groupQuery.find();
             } catch (ParseException error) {
@@ -170,34 +181,36 @@ public class AddActivity extends ActionBarActivity {
             return null;
         }
 
+//        Loop through objectList and add objects to groupList as a string to show in the listview.
         @Override
         protected void onPostExecute(Void result) {
-            for (ParseObject query : objectList) {
-                list.add((String) query.get("group_name"));
+            for (ParseObject groupQuery : objectList) {
+                groupList.add((String) groupQuery.get("group_name"));
                 adapter.notifyDataSetChanged();
             }
         }
     }
 
     //  When add button is clicked
-    public void sendMessage(View view) {
+    public void addActivity(View view) {
         Intent intent = new Intent(this, MainActivity.class);
         EditText editText = (EditText) findViewById(R.id.edit_message);
         String activityName = editText.getText().toString();
-        StringBuilder dateTimeBuilder = new StringBuilder().append(date).append("T").append(time).append(":00.000Z");
-        dateTime = dateTimeBuilder.toString();
 
+//        Prepare date and time to be set as in parse
+        StringBuilder tDateBuilder = new StringBuilder().append(date).append("T").append(time).append(":00.000Z");
+        tDate = tDateBuilder.toString();
         ParsePosition pos = new ParsePosition(0);
-        SimpleDateFormat format = new SimpleDateFormat("yyyy'-'MM'-'dd'T'HH':'mm':'ss.SSS'Z'");
-        Date date = format.parse(dateTime, pos);
-        System.out.println(format.format(date));
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy'-'MM'-'dd'T'HH':'mm':'ss.SSS'Z'");
+        Date date = dateFormat.parse(tDate, pos);
 
-        ParseObject newActivity = new ParseObject("Activity");
-        newActivity.put("groups", ParseObject.createWithoutData("Group", ObjectId));
-        newActivity.put("activity_name", activityName);
-        newActivity.put("attending", 0);
-        newActivity.put("date", date);
-        newActivity.saveInBackground();
+//        Create new activity object in parse with given attributes
+        ParseObject newActivityQuery = new ParseObject("Activity");
+        newActivityQuery.put("groups", ParseObject.createWithoutData("Group", ObjectId));
+        newActivityQuery.put("activity_name", activityName);
+        newActivityQuery.put("attending", 0);
+        newActivityQuery.put("date", date);
+        newActivityQuery.saveInBackground();
 
         startActivity(intent);
         finish();

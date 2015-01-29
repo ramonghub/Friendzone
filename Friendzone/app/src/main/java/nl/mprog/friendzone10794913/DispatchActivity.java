@@ -1,5 +1,10 @@
-//DispatchActivity.java
-//Checks if
+/**
+ * Ramon Geessink
+ * ramongeessink@gmail.com
+ * 10794913
+ *
+ * Checks if user has logged in before, and sends user to correct page
+ */
 package nl.mprog.friendzone10794913;
 
 import android.app.Activity;
@@ -10,16 +15,14 @@ import com.parse.ParseUser;
 
 public class DispatchActivity extends Activity {
 
+//    Check if there is a current user, if so.. go to main activity, else go to login activity.
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        // Check if there is current user info
         if (ParseUser.getCurrentUser() != null) {
-            // Start an intent for the logged in activity
             startActivity(new Intent(this, MainActivity.class));
             finish();
         } else {
-            // Start and intent for the logged out activity
             startActivity(new Intent(this, LoginActivity.class));
             finish();
         }
