@@ -1,10 +1,9 @@
 ##Friendzone
-####Doel:
+####Summary
 
 ####Screenshot:
-..
 Selected Activity
 
-**Name Student**: Ramon Geessink
-**Copyright statement**: Public Domain
-**License**: GNU GENERAL PUBLIC
+#####Naam student: Ramon Geessink
+#####Copyright statement: Public Domain
+#####License: GNU GENERAL PUBLIC
