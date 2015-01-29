@@ -7,3 +7,6 @@ Friendzone is een app die de gebruiker in staat stelt om met een bepaalde (groep
 - License: GNU GENERAL PUBLIC
 
 External sources:
+- http://www.androidbegin.com/tutorial/android-parse-com-simple-login-and-signup-tutorial/
+- http://www.androidbegin.com/tutorial/android-parse-com-listview-images-and-texts-tutorial/
+
