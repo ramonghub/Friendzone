@@ -1,12 +1,10 @@
-Friendzone
-Application name: Friendzone
+##Friendzone
+####Doel:
 
-Doel:
-
-Screenshot:
+####Screenshot:
 ..
 Selected Activity
 
-Name Student: Ramon Geessink
-Copyright statement: Public Domain
-License: GNU GENERAL PUBLIC
+**Name Student**: Ramon Geessink
+**Copyright statement**: Public Domain
+**License**: GNU GENERAL PUBLIC
