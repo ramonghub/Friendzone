@@ -20,7 +20,7 @@ public class DispatchActivity extends Activity {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         if (ParseUser.getCurrentUser() != null) {
-            startActivity(new Intent(this, MainActivity.class));
+            startActivity(new Intent(this, GroupActivity.class));
             finish();
         } else {
             startActivity(new Intent(this, LoginActivity.class));

@@ -2,20 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity">
-    <item android:id="@+id/logout"
-        android:title="LOGOUT "
-        android:orderInCategory="102"
-        app:showAsAction="always"
-        android:icon="@drawable/logout"/>
-
-    <item
-        android:title="add_group"
-        android:id="@+id/add_group"
-        android:icon="@drawable/ic_action_add_group"
-        android:orderInCategory="101"
-        app:showAsAction="always"
-        tools:context="nl.mprog.friendzone10794913.GroupActivity"/>
-
     <item
         android:title="add_activity"
         android:id="@+id/add_activity"

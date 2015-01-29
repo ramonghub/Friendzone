@@ -3,7 +3,7 @@
  * ramongeessink@gmail.com
  * 10794913
  *
- * MainActivity.java shows the activities of the groups that the user is a member of.
+ * GroupActivity.java shows the groups that the user is a member of.
  * The user can select an activity by pressing it.
  */
 
@@ -28,30 +28,26 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-public class MainActivity extends ActionBarActivity {
+public class GroupActivity extends ActionBarActivity {
 
     private List<ParseObject> objectList;
     private ListView listview;
     private ProgressDialog mProgressDialog;
     private ArrayAdapter<String> adapter;
-    private String objectId;
-    private String groupName;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_listview);
+        setContentView(R.layout.activity_group);
         new MakeList().execute();
-//        Get groupname from groupactivity.java
-        groupName = getIntent().getStringExtra("group_name");
     }
-//    Make list of all activities to show in listview
+    //    Make list of all groups to show in listview
     private class MakeList extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mProgressDialog = new ProgressDialog(MainActivity.this);
+            mProgressDialog = new ProgressDialog(GroupActivity.this);
             mProgressDialog.setTitle("Loading");
             mProgressDialog.setMessage("Please wait.");
             mProgressDialog.setIndeterminate(false);
@@ -63,15 +59,11 @@ public class MainActivity extends ActionBarActivity {
         protected Void doInBackground(Void... params) {
 //            Select all groups where user is a member of
             ParseQuery<ParseObject> groupQuery = new ParseQuery<ParseObject>("Group");
-            groupQuery.whereEqualTo("group_name", groupName);
-
-//            Get all activities from selected groups
-            ParseQuery<ParseObject> activityQuery = new ParseQuery<ParseObject>("Activity");
-            activityQuery.whereMatchesQuery("groups", groupQuery);
-            activityQuery.addDescendingOrder("date");
+            groupQuery.include("members");
+            groupQuery.whereEqualTo("members", ParseUser.getCurrentUser().getUsername());
 
             try {
-                objectList = activityQuery.find();
+                objectList = groupQuery.find();
             } catch (ParseException e) {
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
@@ -82,42 +74,45 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(Void result) {
             listview = (ListView) findViewById(R.id.listview);
-            adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.activity_main_listview_item);
-//            Get activity_name to show
-            for (ParseObject activityQuery : objectList) {
-                adapter.add((String) String.valueOf(activityQuery.get("activity_name")));
+            adapter = new ArrayAdapter<String>(GroupActivity.this, R.layout.activity_main_listview_item);
+//            Get group_name to show
+            for (ParseObject groupQuery : objectList) {
+                adapter.add((String) String.valueOf(groupQuery.get("group_name")));
             }
             listview.setAdapter(adapter);
             mProgressDialog.dismiss();
 
 //                Go to details of activity when clicked on
-                listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view,
-                                            int position, long id) {
-                        Intent i = new Intent(MainActivity.this, SelectedActivity.class);
-                        // Pass data "name" followed by the position
-                        i.putExtra("date", objectList.get(position).getDate("date").toString());
-                        i.putExtra("objectId", objectList.get(position).getObjectId().toString());
-                        i.putExtra("activity_name", objectList.get(position).getString("activity_name"));
-                        startActivity(i);
-                    }
-                });
+            listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
+                    Intent i = new Intent(GroupActivity.this, MainActivity.class);
+                    // Pass data "name" followed by the position
+                    i.putExtra("objectId", objectList.get(position).getObjectId().toString());
+                    i.putExtra("group_name", objectList.get(position).getString("group_name"));
+                    startActivity(i);
+                }
+            });
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_group, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.add_activity) {
-            Intent intentAddActivity = new Intent(this, AddActivity.class);
-            startActivity(intentAddActivity);
+        if (id == R.id.logout) {
+            ParseUser.getCurrentUser().logOut();
+            startActivity(new Intent(GroupActivity.this, DispatchActivity.class));
+        }
+        if (id == R.id.add_group) {
+            Intent intentAddGroup = new Intent(this, AddGroupActivity.class);
+            startActivity(intentAddGroup);
         }
         return super.onOptionsItemSelected(item);
     }

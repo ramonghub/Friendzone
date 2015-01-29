@@ -100,7 +100,7 @@ public class NewAddGroupActivity extends ActionBarActivity {
 
 //    Make group when create group button is clicked
     public void CreateGroup(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, GroupActivity.class);
         EditText editText = (EditText) findViewById(R.id.edit_message);
         String newGroupName = editText.getText().toString();
 

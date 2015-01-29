@@ -1,20 +1,18 @@
-<menu
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="nl.mprog.friendzone10794913.GroupActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".GroupActivity">
+    <item android:id="@+id/logout"
+        android:title="LOGOUT "
+        android:orderInCategory="102"
+        app:showAsAction="always"
+        android:icon="@drawable/logout"/>
+
     <item
         android:title="add_group"
         android:id="@+id/add_group"
         android:icon="@drawable/ic_action_add_group"
-        android:orderInCategory="100"
+        android:orderInCategory="101"
         app:showAsAction="always"
         tools:context="nl.mprog.friendzone10794913.GroupActivity"/>
-
-    <item
-        android:title="add_activity"
-        android:id="@+id/add_activity"
-        android:icon="@drawable/ic_action_new_event"
-        android:orderInCategory="100"
-        app:showAsAction="always"/>
 </menu>

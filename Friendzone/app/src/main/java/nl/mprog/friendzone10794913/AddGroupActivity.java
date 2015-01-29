@@ -117,7 +117,7 @@ public class AddGroupActivity extends ActionBarActivity {
             }
             }
         });
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, GroupActivity.class);
         startActivity(intent);
         finish();
     }
